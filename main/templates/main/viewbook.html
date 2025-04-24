@@ -1,0 +1,107 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'books' %}">Livres</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ book.reference }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Book Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Détails du Livre</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Référence:</div>
+                        <div class="col-md-8">{{ book.reference }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Désignation:</div>
+                        <div class="col-md-8">{{ book.designation }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Catégorie:</div>
+                        <div class="col-md-8">{{ book.category }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Langue:</div>
+                        <div class="col-md-8">{{ book.language }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Centre:</div>
+                        <div class="col-md-8">{{ book.centre }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Location:</div>
+                        <div class="col-md-8">{{ book.location }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Stock Actuel:</div>
+                        <div class="col-md-8">
+                            <span class="badge {% if book.stock > 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ book.stock }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Historique des Mouvements</h4>
+                </div>
+                <div class="card-body">
+                    {% if history %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                    <th>Quantité</th>
+                                    <th>Motif</th>
+                                    <th>Nom</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in history %}
+                                <tr>
+                                    <td>{{ entry.date }}</td>
+                                    <td>
+                                        {% if entry.action == 'entree' %}
+                                        <span class="badge bg-success">Entrée</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Sortie</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ entry.qantite }}</td>
+                                    <td>{{ entry.motif }}</td>
+                                    <td>{{ entry.nom }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center text-muted">Aucun historique disponible</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

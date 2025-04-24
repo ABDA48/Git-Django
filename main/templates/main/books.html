@@ -9,41 +9,65 @@
         </button>
     </div>
 
+    <!-- Search and Results Count -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Rechercher par référence, désignation ou emplacement..." value="{{ search_query }}">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-info fs-6">
+                        <i class="fas fa-book"></i> {{ total_count }} livre(s) trouvé(s)
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Filtres -->
     <div class="card mb-4">
         <div class="card-body">
             <form method="get" class="row g-3">
+                {% if search_query %}
+                <input type="hidden" name="search" value="{{ search_query }}">
+                {% endif %}
                 <div class="col-md-3">
                     <label class="form-label">Catégorie</label>
                     <select name="category" class="form-select">
                         <option value="">Toutes les catégories</option>
-                        <option value="Quran">Quran</option>
-                        <option value="Fiqh">Fiqh</option>
-                        <option value="Anqaeed">Anqaeed</option>
-                        <option value="Douan">Douan</option>
-                        <option value="Sirat">Sirat</option>
-                        <option value="Akhlaq">Akhlaq</option>
+                        <option value="Quran" {% if category_filter == 'Quran' %}selected{% endif %}>Quran</option>
+                        <option value="Fiqh" {% if category_filter == 'Fiqh' %}selected{% endif %}>Fiqh</option>
+                        <option value="Anqaeed" {% if category_filter == 'Anqaeed' %}selected{% endif %}>Anqaeed</option>
+                        <option value="Douan" {% if category_filter == 'Douan' %}selected{% endif %}>Douan</option>
+                        <option value="Sirat" {% if category_filter == 'Sirat' %}selected{% endif %}>Sirat</option>
+                        <option value="Akhlaq" {% if category_filter == 'Akhlaq' %}selected{% endif %}>Akhlaq</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Langue</label>
                     <select name="language" class="form-select">
                         <option value="">Toutes les langues</option>
-                        <option value="Mg">Mg</option>
-                        <option value="Ar">Ar</option>
-                        <option value="Fr">Fr</option>
-                        <option value="Ar-Mg">Ar-Mg</option>
-                        <option value="Mg-Fr">Mg-Fr</option>
-                        <option value="Ar-Fr">Ar-Fr</option>
+                        <option value="Mg" {% if language_filter == 'Mg' %}selected{% endif %}>Mg</option>
+                        <option value="Ar" {% if language_filter == 'Ar' %}selected{% endif %}>Ar</option>
+                        <option value="Fr" {% if language_filter == 'Fr' %}selected{% endif %}>Fr</option>
+                        <option value="Ar-Mg" {% if language_filter == 'Ar-Mg' %}selected{% endif %}>Ar-Mg</option>
+                        <option value="Mg-Fr" {% if language_filter == 'Mg-Fr' %}selected{% endif %}>Mg-Fr</option>
+                        <option value="Ar-Fr" {% if language_filter == 'Ar-Fr' %}selected{% endif %}>Ar-Fr</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Centre</label>
                     <select name="centre" class="form-select">
                         <option value="">Tous les centres</option>
-                        <option value="Antaniavo">Antaniavo</option>
-                        <option value="Andakana">Andakana</option>
-                        <option value="Manakara">Manakara</option>
+                        <option value="Antaniavo" {% if centre_filter == 'Antaniavo' %}selected{% endif %}>Antaniavo</option>
+                        <option value="Andakana" {% if centre_filter == 'Andakana' %}selected{% endif %}>Andakana</option>
+                        <option value="Manakara" {% if centre_filter == 'Manakara' %}selected{% endif %}>Manakara</option>
                     </select>
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
@@ -64,7 +88,10 @@
                             <th>Désignation</th>
                             <th>Catégorie</th>
                             <th>Langue</th>
+                            <th>Quantité Entrée</th>
+                            <th>Quantité Sortie</th>
                             <th>Stock</th>
+                            <th>Location</th>
                             <th>Centre</th>
                             <th>Actions</th>
                         </tr>
@@ -76,34 +103,76 @@
                             <td>{{ book.designation }}</td>
                             <td>{{ book.category }}</td>
                             <td>{{ book.language }}</td>
+                            <td>{{ book.quantite_entree }}</td>
+                            <td>{{ book.quantite_sortie }}</td>
                             <td>
                                 <span class="badge {% if book.stock > 0 %}bg-success{% else %}bg-danger{% endif %}">
                                     {{ book.stock }}
                                 </span>
                             </td>
+                            <td>{{ book.location }}</td>
                             <td>{{ book.centre }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-info" title="Voir détails">
+                                    <a href="{% url 'view_book' book.reference %}" class="btn btn-sm btn-primary" title="Voir détails">
                                         <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-warning" title="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" title="Supprimer">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center">Aucun livre trouvé</td>
+                            <td colspan="10" class="text-center">Aucun livre trouvé</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            {% if books.paginator.num_pages > 1 %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if books.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if language_filter %}&language={{ language_filter }}{% endif %}{% if centre_filter %}&centre={{ centre_filter }}{% endif %}" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ books.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if language_filter %}&language={{ language_filter }}{% endif %}{% if centre_filter %}&centre={{ centre_filter }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in books.paginator.page_range %}
+                        {% if books.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > books.number|add:'-3' and num < books.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if language_filter %}&language={{ language_filter }}{% endif %}{% if centre_filter %}&centre={{ centre_filter }}{% endif %}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if books.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ books.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if language_filter %}&language={{ language_filter }}{% endif %}{% if centre_filter %}&centre={{ centre_filter }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ books.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if language_filter %}&language={{ language_filter }}{% endif %}{% if centre_filter %}&centre={{ centre_filter }}{% endif %}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -148,6 +217,18 @@
                             <option value="Mg-Fr">Mg-Fr</option>
                             <option value="Ar-Fr">Ar-Fr</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Centre</label>
+                        <select class="form-select" name="centre">
+                            <option value="Antaniavo">Antaniavo</option>
+                            <option value="Andakana">Andakana</option>
+                            <option value="Manakara">Manakara</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" name="location">
                     </div>
                     <div class="text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>

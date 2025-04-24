@@ -1,0 +1,205 @@
+{% extends 'main/base.html' %}
+{% load main_extras %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 class="text-center mb-4">Tableau de Bord</h1>
+
+    <div class="row">
+        <!-- Products by Type Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Distribution des Produits par Type</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="productsByTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products by Centre Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Distribution des Produits par Centre</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="productsByCentreChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books by Category Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Distribution des Livres par Catégorie</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="booksByCategoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books by Language Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Distribution des Livres par Langue</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="booksByLanguageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Levels Chart -->
+        <div class="col-md-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Niveaux de Stock</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="stockLevelsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Data from Django context
+const productsByType = {{ products_by_type|safe }};
+const productsByCentre = {{ products_by_centre|safe }};
+const booksByCategory = {{ books_by_category|safe }};
+const booksByLanguage = {{ books_by_language|safe }};
+const stockLevels = {{ stock_levels|safe }};
+
+// Products by Type Chart
+new Chart(document.getElementById('productsByTypeChart'), {
+    type: 'pie',
+    data: {
+        labels: {{ products_by_type|get_keys|safe }},
+        datasets: [{
+            data: {{ products_by_type|get_values|safe }},
+            backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+});
+
+// Products by Centre Chart
+new Chart(document.getElementById('productsByCentreChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ products_by_centre|get_keys|safe }},
+        datasets: [{
+            label: 'Nombre de Produits',
+            data: {{ products_by_centre|get_values|safe }},
+            backgroundColor: '#36A2EB'
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Books by Category Chart
+new Chart(document.getElementById('booksByCategoryChart'), {
+    type: 'doughnut',
+    data: {
+        labels: {{ books_by_category|get_keys|safe }},
+        datasets: [{
+            data: {{ books_by_category|get_values|safe }},
+            backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+});
+
+// Books by Language Chart
+new Chart(document.getElementById('booksByLanguageChart'), {
+    type: 'bar',
+    data: {
+        labels: Object.keys(booksByLanguage),
+        datasets: [{
+            label: 'Nombre de Livres',
+            data: Object.values(booksByLanguage),
+            backgroundColor: '#FF6384'
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Stock Levels Chart
+new Chart(document.getElementById('stockLevelsChart'), {
+    type: 'line',
+    data: {
+        labels: stockLevels.labels,
+        datasets: [{
+            label: 'Produits',
+            data: stockLevels.products,
+            borderColor: '#36A2EB',
+            fill: false
+        }, {
+            label: 'Livres',
+            data: stockLevels.books,
+            borderColor: '#FF6384',
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %} 
