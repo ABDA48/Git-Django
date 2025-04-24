@@ -1,11 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    Hello
-</body>
-</html>
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-4 mb-3">Bienvenue au Système de Gestion d'Inventaire</h1>
+            <p class="lead">Gérez votre inventaire de manière efficace et efficiente</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Products Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-boxes fa-3x mb-3 text-primary"></i>
+                    <h5 class="card-title">Produits</h5>
+                    <p class="card-text">Gérez votre inventaire de produits, suivez les niveaux de stock et surveillez les mouvements.</p>
+                    <a href="{% url 'products' %}" class="btn btn-primary mt-3">Voir les Produits</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Responsables Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x mb-3 text-success"></i>
+                    <h5 class="card-title">Responsables</h5>
+                    <p class="card-text">Suivez et gérez le personnel responsable des articles d'inventaire.</p>
+                    <a href="{% url 'responsables' %}" class="btn btn-success mt-3">Voir les Responsables</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-book fa-3x mb-3 text-danger"></i>
+                    <h5 class="card-title">Livres</h5>
+                    <p class="card-text">Gérez votre inventaire de livres, suivez les catégories et les langues.</p>
+                    <a href="{% url 'books' %}" class="btn btn-danger mt-3">Voir les Livres</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x mb-3 text-info"></i>
+                    <h5 class="card-title">Tableau de Bord</h5>
+                    <p class="card-text">Consultez les analyses et les rapports de votre gestion d'inventaire.</p>
+                    <a href="#" class="btn btn-info mt-3">Voir le Tableau de Bord</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

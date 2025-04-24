@@ -1,53 +1,42 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from main.models import Avatar
+from main.models import Avatar, Depot, DepotLivre, HistoriqueDepot, HistoriqueDepotLivre
 
 def home(response):
     return render(response,'main/index.html',{})
 
+def products(request):
+    products = Depot.objects.all()
+    context = {
+        'products': products,
+        'title': 'Produits'
+    }
+    return render(request, 'main/products.html', context)
 
-@csrf_exempt
-def upload_avatar(request):
-    if request.method == 'POST' and request.FILES.get('file'):
-        uploaded_file = request.FILES['file']
-        file_name = uploaded_file.name
-        
-        # Check if an Avatar with the same file name already exists
-        existing_avatar = Avatar.objects.filter(image__endswith=file_name).first()  # Search for the file by name
-        
-        if existing_avatar:
-            # If the file with the same name exists, delete its image file from the file system
-            if existing_avatar.image:
-                existing_avatar.image.delete()  # Delete the old image file
-                existing_avatar.delete()  # Delete the Avatar record
-        
-        # Create a new Avatar instance with the uploaded file
-        avatar = Avatar.objects.create(image=uploaded_file)
+def books(request):
+    books = DepotLivre.objects.all()
+    context = {
+        'books': books,
+        'title': 'Livres'
+    }
+    return render(request, 'main/books.html', context)
 
-        # Get the URL of the uploaded image
-        file_url = avatar.image.url
-        print(file_url)
-        return JsonResponse({'url': file_url}, status=200)
+def responsables(request):
+    # Get unique responsables from Depot model
+    responsables = Depot.objects.values_list('responsable', flat=True).distinct()
+    
+    # Create a dictionary to store products for each responsable
+    responsable_products = {}
+    for responsable in responsables:
+        responsable_products[responsable] = Depot.objects.filter(responsable=responsable)
+    
+    context = {
+        'responsables': responsables,
+        'responsable_products': responsable_products,
+        'title': 'Responsables'
+    }
+    return render(request, 'main/responsables.html', context)
 
-    return JsonResponse({'error': 'Invalid request or no file provided'}, status=400)
 
-@csrf_exempt
-def delete_avatar(request, filename):
-    if request.method == 'POST':
-        print(filename)
-        # Check if an Avatar with the same file name already exists
-        existing_avatar = Avatar.objects.filter(image__contains=filename).first()  # Search for the file by name
-        
-        if existing_avatar:
-            # If the file with the same name exists, delete its image file from the file system
-            if existing_avatar.image:
-                existing_avatar.image.delete()  # Delete the old image file
-        
-
-            return JsonResponse({'message': f'Avatar with filename {filename} deleted successfully.'}, status=200)
-        else:
-            return JsonResponse({'error': f'Avatar with filename {filename} not found.'}, status=404)
-
-    return JsonResponse({'error': 'Invalid request method, POST required.'}, status=405)
-
+ 

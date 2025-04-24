@@ -1,0 +1,144 @@
+{% extends 'main/base.html' %}
+{% load main_extras %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Gestion des Responsables</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addResponsableModal">
+            <i class="fas fa-plus"></i> Nouveau Responsable
+        </button>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Centre</label>
+                    <select name="centre" class="form-select">
+                        <option value="">Tous les centres</option>
+                        <option value="Antaniavo">Antaniavo</option>
+                        <option value="Andakana">Andakana</option>
+                        <option value="Manakara">Manakara</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Type de Produit</label>
+                    <select name="type" class="form-select">
+                        <option value="">Tous les types</option>
+                        <option value="Electique">Electique</option>
+                        <option value="Plomberie">Plomberie</option>
+                        <option value="Construction">Construction</option>
+                        <option value="Jeux">Jeux</option>
+                        <option value="Vetement">Vetement</option>
+                        <option value="Accessoir">Accessoir</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tableau des responsables -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Centre</th>
+                            <th>Type de Produit</th>
+                            <th>Nombre de Produits</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for responsable in responsables %}
+                        <tr>
+                            <td>{{ responsable }}</td>
+                            <td>
+                                {% with products=responsable_products|get_item:responsable %}
+                                    {% if products %}
+                                        {{ products.first.centre }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with products=responsable_products|get_item:responsable %}
+                                    {% if products %}
+                                        {{ products.first.type }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with products=responsable_products|get_item:responsable %}
+                                    <span class="badge bg-info">{{ products|length }}</span>
+                                {% endwith %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-info" title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Aucun responsable trouvé</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour ajouter un responsable -->
+<div class="modal fade" id="addResponsableModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter un nouveau responsable</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Nom</label>
+                        <input type="text" class="form-control" name="responsable" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Centre</label>
+                        <select class="form-select" name="centre">
+                            <option value="Antaniavo">Antaniavo</option>
+                            <option value="Andakana">Andakana</option>
+                            <option value="Manakara">Manakara</option>
+                        </select>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

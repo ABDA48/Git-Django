@@ -1,0 +1,161 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Gestion des Livres</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">
+            <i class="fas fa-plus"></i> Nouveau Livre
+        </button>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Catégorie</label>
+                    <select name="category" class="form-select">
+                        <option value="">Toutes les catégories</option>
+                        <option value="Quran">Quran</option>
+                        <option value="Fiqh">Fiqh</option>
+                        <option value="Anqaeed">Anqaeed</option>
+                        <option value="Douan">Douan</option>
+                        <option value="Sirat">Sirat</option>
+                        <option value="Akhlaq">Akhlaq</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Langue</label>
+                    <select name="language" class="form-select">
+                        <option value="">Toutes les langues</option>
+                        <option value="Mg">Mg</option>
+                        <option value="Ar">Ar</option>
+                        <option value="Fr">Fr</option>
+                        <option value="Ar-Mg">Ar-Mg</option>
+                        <option value="Mg-Fr">Mg-Fr</option>
+                        <option value="Ar-Fr">Ar-Fr</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Centre</label>
+                    <select name="centre" class="form-select">
+                        <option value="">Tous les centres</option>
+                        <option value="Antaniavo">Antaniavo</option>
+                        <option value="Andakana">Andakana</option>
+                        <option value="Manakara">Manakara</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tableau des livres -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Référence</th>
+                            <th>Désignation</th>
+                            <th>Catégorie</th>
+                            <th>Langue</th>
+                            <th>Stock</th>
+                            <th>Centre</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td>{{ book.reference }}</td>
+                            <td>{{ book.designation }}</td>
+                            <td>{{ book.category }}</td>
+                            <td>{{ book.language }}</td>
+                            <td>
+                                <span class="badge {% if book.stock > 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ book.stock }}
+                                </span>
+                            </td>
+                            <td>{{ book.centre }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-info" title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">Aucun livre trouvé</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour ajouter un livre -->
+<div class="modal fade" id="addBookModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter un nouveau livre</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Référence</label>
+                        <input type="text" class="form-control" name="reference" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Désignation</label>
+                        <input type="text" class="form-control" name="designation">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Catégorie</label>
+                        <select class="form-select" name="category">
+                            <option value="Quran">Quran</option>
+                            <option value="Fiqh">Fiqh</option>
+                            <option value="Anqaeed">Anqaeed</option>
+                            <option value="Douan">Douan</option>
+                            <option value="Sirat">Sirat</option>
+                            <option value="Akhlaq">Akhlaq</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Langue</label>
+                        <select class="form-select" name="language">
+                            <option value="Mg">Mg</option>
+                            <option value="Ar">Ar</option>
+                            <option value="Fr">Fr</option>
+                            <option value="Ar-Mg">Ar-Mg</option>
+                            <option value="Mg-Fr">Mg-Fr</option>
+                            <option value="Ar-Fr">Ar-Fr</option>
+                        </select>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
