@@ -1,0 +1,6 @@
+# Ignore Django SQLite database
+db.sqlite3
+
+# Optional: ignore all SQLite temporary and backup files
+*.sqlite3
+*.sqlite3-journal
